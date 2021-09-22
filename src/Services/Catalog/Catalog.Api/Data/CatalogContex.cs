@@ -16,12 +16,35 @@ namespace Catalog.Api.Data
 
             var connectionString = configuration.GetValue<string>("DatabaseSettings:ConnectionString");
             var databaseName = configuration.GetValue<string>("DatabaseSettings:DatabaseName");
+
             var client = new MongoClient(connectionString);
-            var db = client.GetDatabase(databaseName);
-            ProductCollection = db.GetCollection<Product>(configuration.GetValue<string>("DatabaseSettings:CollectionName"));
-            CatalogContextSeedData.SeedData(ProductCollection);
+
+            try
+            {
+                if (CheckDbExist(client, databaseName))
+                {
+                    var db = client.GetDatabase(databaseName);
+
+                    ProductCollection = db.GetCollection<Product>(configuration.GetValue<string>("DatabaseSettings:CollectionName"));
+                    CatalogContextSeedData.SeedData(ProductCollection);
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+
 
         }
         public IMongoCollection<Product> ProductCollection { get; }
+
+
+        private bool CheckDbExist(MongoClient mongoClient, string name)
+        {
+            var databaseNames = mongoClient.ListDatabaseNames().ToList();
+            return databaseNames.Any(s => s == name);
+        }
     }
 }
