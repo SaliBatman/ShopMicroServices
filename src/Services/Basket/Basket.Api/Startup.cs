@@ -27,7 +27,7 @@ namespace Basket.Api
         {
 
             services.AddControllers();
-            services.AddStackExchangeRedisCache(option => option.Configuration == Configuration.GetValue<string>("CacheSettings:ConnectionString"));
+            services.AddStackExchangeRedisCache(option => { option.Configuration == Configuration.GetValue<string>("CacheSettings:ConnectionString")});
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Basket.Api", Version = "v1" });
